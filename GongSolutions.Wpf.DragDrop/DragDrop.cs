@@ -510,7 +510,11 @@ namespace GongSolutions.Wpf.DragDrop
         UIElement adornment = null;
 
         var contentPresenter = new ContentPresenter();
-        contentPresenter.Content = m_DragInfo.Data;
+        
+        // extmars: changed from m_DragInfo.data to dropInfo 
+        // Because the EffectAdorner needs information of the target, not the source
+        contentPresenter.Content = dropInfo; 
+
         contentPresenter.ContentTemplate = template;
 
         adornment = contentPresenter;
@@ -740,12 +744,14 @@ namespace GongSolutions.Wpf.DragDrop
           if (dragHandler.CanStartDrag(m_DragInfo)) {
             dragHandler.StartDrag(m_DragInfo);
 
-            if (m_DragInfo.Effects != DragDropEffects.None && m_DragInfo.Data != null) {
+            if (m_DragInfo.Effects != DragDropEffects.None) {
               var data = m_DragInfo.DataObject;
 
-              if (data == null) {
+              // extmars: Change to make it possible to send an own DataObject over gong drag&drop librarie 
+              if (data == null && m_DragInfo.Data != null)
+              {
                 data = new DataObject(DataFormat.Name, m_DragInfo.Data);
-              } else {
+              } else if (m_DragInfo.Data != null) {
                 data.SetData(DataFormat.Name, m_DragInfo.Data);
               }
 
